@@ -1,13 +1,13 @@
 {
-  "name": "@wheel-cli/core",
-  "version": "1.0.2",
-  "description": "wheel-cli core",
+  "name": "@wheel-cli/log",
+  "version": "1.0.0",
+  "description": "wheel-cli log",
   "keywords": [
     "wheel-cli",
-    "@wheel-cli/core"
+    "@wheel-cli/log"
   ],
   "author": "lhf <626712309@qq.com>",
-  "homepage": "https://github.com/lhf2/wheel-cli/tree/main/packages/core#readme",
+  "homepage": "https://github.com/lhf2/wheel-cli/tree/main/packages/log#readme",
   "license": "ISC",
   "main": "lib/index.js",
   "directories": {
@@ -18,7 +18,6 @@
     "lib"
   ],
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "repository": {
@@ -26,16 +25,12 @@
     "url": "git+https://github.com/lhf2/wheel-cli.git"
   },
   "scripts": {
-    "test": "node ./__tests__/core.test.js"
+    "test": "node ./__tests__/@wheel-cli/log.test.js"
   },
   "bugs": {
     "url": "https://github.com/lhf2/wheel-cli/issues"
   },
   "dependencies": {
-    "@wheel-cli/utils": "^1.0.1",
-    "@wheel-cli/log": "^1.0.0"
-  },
-  "bin": {
-    "wheel-cli": "bin/index.js"
+    "npmlog": "^6.0.2"
   }
 }
