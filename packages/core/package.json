@@ -1,6 +1,6 @@
 {
   "name": "@wheel-cli/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "wheel-cli core",
   "keywords": [
     "wheel-cli",
@@ -31,6 +31,6 @@
     "url": "https://github.com/lhf2/wheel-cli/issues"
   },
   "dependencies": {
-    "@wheel-cli/utils": "^1.0.0"
+    "@wheel-cli/utils": "^1.0.1"
   }
 }
