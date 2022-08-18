@@ -11,7 +11,7 @@ const pkg = require('../package.json')
 // 引入我们封装的 npmlog 工具
 const log = require('@wheel-cli/log')
 // 引入配置文件
-const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME} = require('./const')
+const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME, NPM_NAME } = require('./const')
 // 引入user-home 跨操作系统获取用户主目录
 const userHome = require('user-home')
 
@@ -20,7 +20,7 @@ const userHome = require('user-home')
  * @param {*}
  * @return {*}
  */
-function core() {
+async function core() {
     try {
         // 检查版本号
         checkPkgVersion()
@@ -34,6 +34,8 @@ function core() {
         checkInputArgs()
         // 检查环境变量
         checkEnv()
+        // 检查工具是否需要更新
+        await checkGlobalUpdate()
     } catch (error) {
         log.error(error.message)
     }
@@ -154,6 +156,27 @@ function createDefaultConfig() {
 
     // 设置 process.env.CLI_HOME_PATH
     process.env.CLI_HOME_PATH = cliConfig.cliHome;
+}
+
+/**
+ * @description: 检查是否需要全局更新
+ *   1.获取当前版本号和模块名
+     2.调用npm API, 获取所有的版本号
+     3.提取所有的版本号,比对哪些版本号是大于当前版本号的
+     4.获取最新的版本号,提示用户更新到该版本
+ * @param {*}
+ * @return {*}
+ */
+async function checkGlobalUpdate() {
+    const currentVersion = pkg.version
+    const npmName = pkg.name
+    const { getNpmSemverVersion } = require('@wheel-cli/get-npm-info')
+    const lastVersion = await getNpmSemverVersion(currentVersion, NPM_NAME)
+    // 如果最新版本存在并且大于当前版本
+    if (lastVersion && semver.gt(lastVersion, currentVersion)) {
+        log.warn(colors.yellow(`请手动更新 ${NPM_NAME}，当前版本：${pkg.version}，最新版本：${lastVersion}
+                更新命令： npm install -g ${NPM_NAME}`));
+    }
 }
 
 
