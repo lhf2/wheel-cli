@@ -29,6 +29,8 @@ function core() {
         checkRoot()
         // 检查用户主目录
         checkUserHome()
+        // 检查用户输入参数
+        checkInputArgs(); 
     } catch (error) {
         log.error(error.message)
     }
@@ -82,5 +84,35 @@ function checkUserHome() {
         throw new Error(colors.red('当前登录用户主目录不存在！'));
     }
 }
+
+/**
+ * @description: 解析参数,判断是否开启 debug 模式,并在全局变量中设置 log 等级
+ * @param {*}
+ * @return {*}
+ */
+let args
+function checkInputArgs() {
+    const minimist = require('minimist');
+    args = minimist(process.argv.slice(2));
+    // 判断是否开启 debug 模式,并在全局变量中设置 log 等级
+    checkArgs();
+}
+
+/**
+ * @description: 判断是否开启 debug 模式,并在全局变量中设置 log 等级
+ * @param {*}
+ * @return {*}
+ */
+function checkArgs() {
+  if (args.debug) {
+    process.env.LOG_LEVEL = 'verbose';
+  } else {
+    process.env.LOG_LEVEL = 'info';
+  }
+  // 设置 log 的等级
+  log.level = process.env.LOG_LEVEL;
+}
+
+
 
 module.exports = core
