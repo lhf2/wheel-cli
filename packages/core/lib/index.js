@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs')
+const path = require('path')
 // 引入颜色库 colors
 const colors = require('colors/safe')
 // 引入版本比对第三方库 semver
@@ -10,7 +11,7 @@ const pkg = require('../package.json')
 // 引入我们封装的 npmlog 工具
 const log = require('@wheel-cli/log')
 // 引入配置文件
-const constant = require('./const')
+const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME} = require('./const')
 // 引入user-home 跨操作系统获取用户主目录
 const userHome = require('user-home')
 
@@ -30,7 +31,9 @@ function core() {
         // 检查用户主目录
         checkUserHome()
         // 检查用户输入参数
-        checkInputArgs(); 
+        checkInputArgs()
+        // 检查环境变量
+        checkEnv()
     } catch (error) {
         log.error(error.message)
     }
@@ -55,7 +58,7 @@ function checkNodeVersion() {
     // 获取当前 node 版本号
     const currentVersion = process.version
     // 获取最低 node 版本号
-    const lowestVersion = constant.LOWEST_NODE_VERSION
+    const lowestVersion = LOWEST_NODE_VERSION
     // 对比最低 node 版本号
     if (!semver.gte(currentVersion, lowestVersion)) {
         throw new Error(`wheel-cli 需要node的最低版本为${lowestVersion}，当前node.js版本为${currentVersion}`);
@@ -104,15 +107,54 @@ function checkInputArgs() {
  * @return {*}
  */
 function checkArgs() {
-  if (args.debug) {
-    process.env.LOG_LEVEL = 'verbose';
-  } else {
-    process.env.LOG_LEVEL = 'info';
-  }
-  // 设置 log 的等级
-  log.level = process.env.LOG_LEVEL;
+    // wheel-cli --debug
+    if (args.debug) {
+        process.env.LOG_LEVEL = 'verbose';
+    } else {
+        process.env.LOG_LEVEL = 'info';
+    }
+    // 设置 log 的等级
+    log.level = process.env.LOG_LEVEL;
 }
 
+
+/**
+ * @description: 检查环境变量
+ * @param {*}
+ * @return {*}
+ */
+function checkEnv() {
+    const dotenv = require('dotenv')
+    // 把.env的环境变量放在process.env里
+    dotenv.config({
+        path: path.resolve(userHome, '.env')
+    })
+    // 创建默认的环境变量配置
+    createDefaultConfig()
+    log.verbose('环境变量', process.env.CLI_HOME_PATH)
+}
+
+/**
+ * @description: 创建默认的环境变量配置
+ * @param {*}
+ * @return {*}
+ */
+function createDefaultConfig() {
+    const cliConfig = {
+        home: userHome
+    }
+
+    // 如果 CLI_HOME 存在 使用CLI_HOME
+    if (process.env.CLI_HOME) {
+        cliConfig['cliHome'] = path.join(userHome, process.env.CLI_HOME)
+    } else {
+        // 如果 CLI_HOME 不存在 使用默认配置
+        cliConfig['cliHome'] = path.join(userHome, DEFAULT_CLI_HOME);
+    }
+
+    // 设置 process.env.CLI_HOME_PATH
+    process.env.CLI_HOME_PATH = cliConfig.cliHome;
+}
 
 
 module.exports = core
