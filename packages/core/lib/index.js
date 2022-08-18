@@ -1,5 +1,6 @@
 'use strict';
 
+const fs = require('fs')
 // 引入颜色库 colors
 const colors = require('colors/safe')
 // 引入版本比对第三方库 semver
@@ -10,6 +11,8 @@ const pkg = require('../package.json')
 const log = require('@wheel-cli/log')
 // 引入配置文件
 const constant = require('./const')
+// 引入user-home 跨操作系统获取用户主目录
+const userHome = require('user-home')
 
 /**
  * @description: 核心方法
@@ -24,6 +27,8 @@ function core() {
         checkNodeVersion()
         // 检查是否为 root 启动
         checkRoot()
+        // 检查用户主目录
+        checkUserHome()
     } catch (error) {
         log.error(error.message)
     }
@@ -64,6 +69,18 @@ function checkRoot() {
     // 检查 root 等级并自动降级
     const rootCheck = require('root-check');
     rootCheck();
+}
+
+/**
+ * @description:检查用户主目录
+ * @param {*}
+ * @return {*}
+ */
+function checkUserHome() {
+    // userHome: /Users/xxx
+    if (!userHome || !fs.existsSync(userHome)) {
+        throw new Error(colors.red('当前登录用户主目录不存在！'));
+    }
 }
 
 module.exports = core
