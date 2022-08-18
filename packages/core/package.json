@@ -32,8 +32,10 @@
     "url": "https://github.com/lhf2/wheel-cli/issues"
   },
   "dependencies": {
+    "@wheel-cli/log": "^1.0.0",
     "@wheel-cli/utils": "^1.0.1",
-    "@wheel-cli/log": "^1.0.0"
+    "colors": "^1.4.0",
+    "semver": "^7.3.7"
   },
   "bin": {
     "wheel-cli": "bin/index.js"
