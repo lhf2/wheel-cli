@@ -22,6 +22,8 @@ function core() {
         checkPkgVersion()
         // 检查 node 版本
         checkNodeVersion()
+        // 检查是否为 root 启动
+        checkRoot()
     } catch (error) {
         log.error(error.message)
     }
@@ -34,7 +36,7 @@ function core() {
  * @return {*}
  */
 function checkPkgVersion() {
-    log.success('友情提示，当前的版本是：', pkg.version)
+    log.info('wheel-cli version', pkg.version)
 }
 
 /**
@@ -45,13 +47,23 @@ function checkPkgVersion() {
 function checkNodeVersion() {
     // 获取当前 node 版本号
     const currentVersion = process.version
-    log.info('友情提示,当前的node版本是:', process.version)
     // 获取最低 node 版本号
     const lowestVersion = constant.LOWEST_NODE_VERSION
     // 对比最低 node 版本号
     if (!semver.gte(currentVersion, lowestVersion)) {
-        throw new Error(colors.red('错误:node版本过低'));
+        throw new Error(`wheel-cli 需要node的最低版本为${lowestVersion}，当前node.js版本为${currentVersion}`);
     }
+}
+
+/**
+ * @description: 需要检查用户是否有root权限，如果没有，则会进行降级处理
+ * @param {*}
+ * @return {*}
+ */
+function checkRoot() {
+    // 检查 root 等级并自动降级
+    const rootCheck = require('root-check');
+    rootCheck();
 }
 
 module.exports = core
