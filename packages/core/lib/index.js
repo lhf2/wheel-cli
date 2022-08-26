@@ -14,6 +14,62 @@ const log = require('@wheel-cli/log')
 const { LOWEST_NODE_VERSION, DEFAULT_CLI_HOME, NPM_NAME } = require('./const')
 // 引入user-home 跨操作系统获取用户主目录
 const userHome = require('user-home')
+const init = require('@wheel-cli/init')
+// 创建一个 commander 实例
+const { program } = require('commander')
+
+/**
+ * @description: 注册命令
+ * @param {*}
+ * @return {*}
+ */
+function registerCommand() {
+    // 注册 debug 模式
+    program
+        .name(Object.keys(pkg.bin)[0])
+        .usage('<command> [options]')
+        .version(pkg.version)
+        .option('-D, --debug', '是否开启调试模式', false)
+    
+    // 注册命令
+    program
+        .command('init [projectName]')
+        .option('-f, --force', '是否强制初始化项目')
+        .action(init)
+
+    // 获取参数
+    const params = program.opts()
+
+    // 注册 debug 命令
+    program.on('option:debug', () => {
+        if (params.debug) {
+            process.env.LOG_LEVEL = 'verbose'
+        } else {
+            process.env.LOG_LEVEL = 'info'
+        }
+        // 设置 log 等级
+        log.level = process.env.LOG_LEVEL
+        log.verbose('test debug')
+    })
+
+    // 监听未注册的所有命令
+    program.on('command:*', (obj) => {
+        const commands = program.commands.map((cmd) => cmd.name())
+        log.info(colors.red('未知的命令' + obj[0]))
+        if (commands.length > 0) {
+            log.info(colors.blue('支持的命令' + commands.join(',')))
+        }
+    })
+
+    // 解析参数
+    program.parse(process.argv)
+
+    // 判断是否输入命令 显示帮助文档
+    if (program.args && program.args.length < 1) {
+        program.outputHelp()
+        console.log();
+    }
+}
 
 /**
  * @description: 核心方法
@@ -36,6 +92,8 @@ async function core() {
         checkEnv()
         // 检查工具是否需要更新
         await checkGlobalUpdate()
+        // 注册命令
+        registerCommand()
     } catch (error) {
         log.error(error.message)
     }

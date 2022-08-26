@@ -32,10 +32,12 @@
     "url": "https://github.com/lhf2/wheel-cli/issues"
   },
   "dependencies": {
+    "@wheel-cli/get-npm-info": "^1.0.0",
+    "@wheel-cli/init": "^1.0.0",
     "@wheel-cli/log": "^1.0.0",
     "@wheel-cli/utils": "^1.0.1",
-    "@wheel-cli/get-npm-info": "^1.0.0",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
+    "commander": "^9.4.0",
     "dotenv": "^16.0.1",
     "minimist": "^1.2.6",
     "root-check": "1.0.0",
